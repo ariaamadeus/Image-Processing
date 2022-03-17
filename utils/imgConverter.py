@@ -18,7 +18,7 @@ def grayScale(img, fromCV2 = False):
 
     else:
         height, width, channel = img.shape
-        newImage = np.zeros(shape=(height,width,1))
+        newImage = np.zeros(shape=(height,width,3))
 
         print("Processing...")
 
@@ -27,8 +27,9 @@ def grayScale(img, fromCV2 = False):
             x = 0
             for pixel in piyel:
                 b,g,r = pixel
-                newImage[y][x]=( 0.11*b + 0.59*g + 0.3*r )
-                #/ 255
+                newImage[y][x][0]=int( 0.11*b + 0.59*g + 0.3*r )
+                newImage[y][x][1]=int( 0.11*b + 0.59*g + 0.3*r )
+                newImage[y][x][2]=int( 0.11*b + 0.59*g + 0.3*r )
                 #print(newImage[y][x])
                 x+=1
             y+=1
@@ -36,6 +37,14 @@ def grayScale(img, fromCV2 = False):
         print("Done!")
 
         return newImage
+
+def one2three(img):
+    height, width, channel = img.shape
+    newImg = np.zeros(shape=(height,width,3))
+    newImg[0] = img
+    newImg[1] = img
+    newImg[2] = img
+    return newImg
 
 def rgbgr(img):
     return cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
