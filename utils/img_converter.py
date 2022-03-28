@@ -25,7 +25,7 @@ def saveImage(path, img):
     path = ''
     for x in range(1,len(pathList)-1):
         path += '/' + pathList[x]
-    path += '/output.jpeg'
+    path += '/output.%s' % pathList[len(pathList)-1].split('.')[1]
     print(path)
     #path = os.path.join(*path)
     cv2.imwrite(path, img)

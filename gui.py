@@ -1,3 +1,4 @@
+import os
 import sys
 
 from PyQt5 import QtGui, QtWidgets, uic
@@ -9,7 +10,7 @@ class Application(QtWidgets.QMainWindow):
     def __init__(self,uiPath):
         super().__init__()
         uic.loadUi(uiPath, self)
-
+	
         self.img = None
         self.filename = None
         self.mode = None
@@ -30,7 +31,9 @@ class Application(QtWidgets.QMainWindow):
         self.showMaximized()
 
     def _openClicked(self):
-        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open')[0]
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, 
+                'Open',os.getcwd(),
+                "Gambar (*.jpg *.jpeg *.png *.tif *.raw *.bmp *.JPG *.JPEG *.PNG *.TIF *.RAW *.BMP)")[0]
         if len(filename):
             self.filename = filename
             self.img, self.mode= conv.openImage(self.filename)
