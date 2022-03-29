@@ -5,6 +5,7 @@ from PyQt5 import QtGui, QtWidgets, uic
 
 from utils import img_converter as conv
 from utils import gray_scale as gs
+from utils import histogram as histo
 
 class Application(QtWidgets.QMainWindow):
     def __init__(self,uiPath):
@@ -14,6 +15,7 @@ class Application(QtWidgets.QMainWindow):
         self.img = None
         self.filename = None
         self.mode = None
+        self.convImg = []
         
         self.findChild(QtWidgets.QPushButton, ('openBut')).clicked.connect(self._openClicked)
         self.findChild(QtWidgets.QPushButton, ('convertBut')).clicked.connect(self._convert)
@@ -23,7 +25,8 @@ class Application(QtWidgets.QMainWindow):
         
         self.previewLabel = self.findChild(QtWidgets.QLabel, ('previewLabel'))
         self.showLabel = self.findChild(QtWidgets.QLabel, ('showLabel'))
-        
+        self.consoleLabel = self.findChild(QtWidgets.QLabel, ('consoleLabel'))
+
         self.previewLabel.setHidden(True)
         self.showLabel.setHidden(True)
         
@@ -38,26 +41,52 @@ class Application(QtWidgets.QMainWindow):
             self.filename = filename
             self.img, self.mode= conv.openImage(self.filename)
             self._showPhoto(self.img)
+        self._print()
 
     def _convert(self):
-        if not self.mode:
-            print("Gambar belum dipilih!")
+        if not self.mode: 
+            self._print("Gambar belum dipilih!")
             return
+        
         choosen = self.listWidget.currentItem().text()
+        
         if choosen == "Gray Scale":
             if self.mode == "L":
-                print("Gambar sudah dalam bentuk grayscale")
+                self._print("Gambar sudah dalam bentuk grayscale")
+                return
             else:
-                self.grayImg = gs.grayScale(self.img, fromCV2 = True)
-                self._showPhoto(self.grayImg, result = True)
+                self._print("Processing...")
+                self.convImg = gs.grayScale(self.img, fromCV2 = True)
+        elif choosen == "Monochrome":
+            self._print("Processing...")
+            self.convImg = gs.monoChrome(self.img, fromCV2 = True)
+        elif choosen == "Histogram":
+            self._print("Processing...")
+            self.convImg = histo.equalize(self.img)
+            print(histo.hist(self.img,False))
+        else:
+            self._print("Mode belum dipilih!")
+            return
+        self._showPhoto(self.convImg, result = True)
+        self._print("Done!")
 
     def _saveConverted(self):
-        conv.saveImage(self.filename, self.grayImg)
+        if len(self.convImg) > 0 :
+            path = conv.saveImage(self.filename, self.convImg)
+            self._print("Saved to %s" %path)
+            return
+        self._print("Nothing to save")
+
+    def _bestFit(self, img, size):
+        hScale = size/img.shape[0]
+        wScale = size/img.shape[1]
+        return hScale if hScale < wScale else wScale 
 
     def _showPhoto(self, image, result = False):
         if not result:
             image = conv.rgbgr(image)
-        image = conv.resize(image, scale = 0.2)
+
+        image = conv.resize(image, scale = self._bestFit(image,480))
         image = QtGui.QImage(image,
                              image.shape[1],
                              image.shape[0],
@@ -70,6 +99,10 @@ class Application(QtWidgets.QMainWindow):
         else:
             self.previewLabel.setPixmap(QtGui.QPixmap.fromImage(image))
             self.previewLabel.setHidden(False)
+        self._print()
+
+    def _print(self, text = ""):
+        self.consoleLabel.setText("Console: %s"%text)
 
 app = QtWidgets.QApplication(sys.argv)
 def begin():

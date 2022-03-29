@@ -9,8 +9,12 @@ for k, v in os.environ.items():
     if k.startswith("QT_") and "cv2" in v:
         del os.environ[k]
 
-def openImage(path): 
-    return cv2.imread(path), Image.open(path).mode
+def openImage(path):
+    mode = Image.open(path).mode
+    print(mode)
+    if mode == "L":
+        return cv2.imread(path,0), mode
+    return cv2.imread(path,1), mode
 
 def rgbgr(img):
     return cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
@@ -26,9 +30,8 @@ def saveImage(path, img):
     for x in range(1,len(pathList)-1):
         path += '/' + pathList[x]
     path += '/output.%s' % pathList[len(pathList)-1].split('.')[1]
-    print(path)
-    #path = os.path.join(*path)
     cv2.imwrite(path, img)
+    return path
 
 if __name__ == "__main__":
     newImage = grayScale(openImage("durian.jpeg"))
