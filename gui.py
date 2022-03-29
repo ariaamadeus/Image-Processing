@@ -104,7 +104,6 @@ class Application(QtWidgets.QMainWindow):
         return hScale if hScale < wScale else wScale 
 
     def _showPhoto(self, image, result = False):
-        #if not result:
         image = conv.rgbgr(image) if self.imgFormat == "rgb" else image
 
         image = conv.resize(image, scale = self._bestFit(image,480))
@@ -115,7 +114,6 @@ class Application(QtWidgets.QMainWindow):
                              QtGui.QImage.Format_RGB888 if self.imgFormat == "rgb" else QtGui.QImage.Format_Grayscale8)
 
         if result:
-            #image = conv.rgbgr(image) if self.imgFormat == "rgb" else image
             self.showLabel.setPixmap(QtGui.QPixmap.fromImage(image))
             self.showLabel.setHidden(False)
         else:

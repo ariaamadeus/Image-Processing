@@ -4,11 +4,6 @@ import cv2
 import numpy as np
 from PIL import Image
 
-#Required for QT x OpenCV
-for k, v in os.environ.items():
-    if k.startswith("QT_") and "cv2" in v:
-        del os.environ[k]
-
 def openImage(path):
     mode = Image.open(path).mode
     print(mode)
