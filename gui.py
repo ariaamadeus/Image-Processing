@@ -6,6 +6,7 @@ from PyQt5 import QtGui, QtWidgets, uic
 from utils import img_converter as conv
 from utils import gray_scale as gs
 from utils import histogram as histo
+from utils.blur import blur, gauss, median 
 
 class Application(QtWidgets.QMainWindow):
     def __init__(self,uiPath):
@@ -15,8 +16,10 @@ class Application(QtWidgets.QMainWindow):
         self.img = None
         self.filename = None
         self.mode = None
+        self.imgFormat = "rgb"
         self.convImg = []
-        
+        self.lastPath = os.getcwd()
+
         self.findChild(QtWidgets.QPushButton, ('openBut')).clicked.connect(self._openClicked)
         self.findChild(QtWidgets.QPushButton, ('convertBut')).clicked.connect(self._convert)
         self.findChild(QtWidgets.QPushButton, ('saveBut')).clicked.connect(self._saveConverted)
@@ -35,8 +38,12 @@ class Application(QtWidgets.QMainWindow):
 
     def _openClicked(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 
-                'Open',os.getcwd(),
+                'Open',self.lastPath,
                 "Gambar (*.jpg *.jpeg *.png *.tif *.raw *.bmp *.JPG *.JPEG *.PNG *.TIF *.RAW *.BMP)")[0]
+        splitPath = filename.split('/')
+        self.lastPath = ""
+        for x in splitPath[:-1]:
+            self.lastPath = os.path.join(self.lastPath, x)
         if len(filename):
             self.filename = filename
             self.img, self.mode= conv.openImage(self.filename)
@@ -49,7 +56,6 @@ class Application(QtWidgets.QMainWindow):
             return
         
         choosen = self.listWidget.currentItem().text()
-        
         if choosen == "Gray Scale":
             if self.mode == "L":
                 self._print("Gambar sudah dalam bentuk grayscale")
@@ -57,12 +63,27 @@ class Application(QtWidgets.QMainWindow):
             else:
                 self._print("Processing...")
                 self.convImg = gs.grayScale(self.img, fromCV2 = True)
+                self.imgFormat = "g"
         elif choosen == "Monochrome":
             self._print("Processing...")
             self.convImg = gs.monoChrome(self.img, fromCV2 = True)
-        elif choosen == "Histogram":
+            self.imgFormat = "g"
+        elif choosen == "Average Blur":
+            self._print("Processing...")
+            self.convImg = blur(self.img)
+            self.imgFormat = "rgb"
+        elif choosen == "Gaussian Blur":
+            self._print("Processing...")
+            self.convImg = gauss(self.img)
+            self.imgFormat = "rgb"
+        elif choosen == "Median Blur":
+            self._print("Processing...")
+            self.convImg = median(self.img)
+            self.imgFormat = "rgb"
+        elif choosen == "CDF":
             self._print("Processing...")
             self.convImg = histo.equalize(self.img)
+            self.imgFormat = "g"
             print(histo.hist(self.img,False))
         else:
             self._print("Mode belum dipilih!")
@@ -83,17 +104,18 @@ class Application(QtWidgets.QMainWindow):
         return hScale if hScale < wScale else wScale 
 
     def _showPhoto(self, image, result = False):
-        if not result:
-            image = conv.rgbgr(image)
+        #if not result:
+        image = conv.rgbgr(image) if self.imgFormat == "rgb" else image
 
         image = conv.resize(image, scale = self._bestFit(image,480))
         image = QtGui.QImage(image,
                              image.shape[1],
                              image.shape[0],
                              image.strides[0],
-                             QtGui.QImage.Format_Grayscale8 if result else QtGui.QImage.Format_RGB888)
+                             QtGui.QImage.Format_RGB888 if self.imgFormat == "rgb" else QtGui.QImage.Format_Grayscale8)
 
         if result:
+            #image = conv.rgbgr(image) if self.imgFormat == "rgb" else image
             self.showLabel.setPixmap(QtGui.QPixmap.fromImage(image))
             self.showLabel.setHidden(False)
         else:
