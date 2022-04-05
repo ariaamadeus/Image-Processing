@@ -6,7 +6,8 @@ from PyQt5 import QtGui, QtWidgets, uic
 from utils import img_converter as conv
 from utils import gray_scale as gs
 from utils import histogram as histo
-from utils.blur import blur, gauss, median 
+from utils import filters
+from utils.blur import blur, gauss, median
 
 class Application(QtWidgets.QMainWindow):
     def __init__(self,uiPath):
@@ -53,8 +54,9 @@ class Application(QtWidgets.QMainWindow):
     def _convert(self):
         if not self.mode: 
             self._print("Gambar belum dipilih!")
-            return
+            return -1
         
+        # Cek list terpilih
         choosen = self.listWidget.currentItem().text()
         if choosen == "Gray Scale":
             if self.mode == "L":
@@ -85,18 +87,33 @@ class Application(QtWidgets.QMainWindow):
             self.convImg = histo.equalize(self.img)
             self.imgFormat = "g"
             print(histo.hist(self.img,False))
+        elif choosen == "CLAHE":
+            self._print("Processing...")
+            self.convImg = histo.clahe(self.img)
+            self.imgFormat = "g"
+        elif choosen == "Bilateral":
+            self._print("Processing...")
+            self.convImg = filters.bilateral(self.img)
+            self.imgFormat = "rgb"
+        elif choosen == "Sobel":
+            self._print("Processing...")
+            self.convImg = filters.sobel(self.img)
+            self.imgFormat = "g"
         else:
             self._print("Mode belum dipilih!")
-            return
+            return -2
+
         self._showPhoto(self.convImg, result = True)
         self._print("Done!")
+        return 0
 
     def _saveConverted(self):
         if len(self.convImg) > 0 :
             path = conv.saveImage(self.filename, self.convImg)
             self._print("Saved to %s" %path)
-            return
+            return 0
         self._print("Nothing to save")
+        return -1
 
     def _bestFit(self, img, size):
         hScale = size/img.shape[0]
@@ -122,6 +139,7 @@ class Application(QtWidgets.QMainWindow):
         self._print()
 
     def _print(self, text = ""):
+        #print ke console GUI
         self.consoleLabel.setText("Console: %s"%text)
 
 app = QtWidgets.QApplication(sys.argv)

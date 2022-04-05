@@ -3,7 +3,7 @@ import os
 import cv2
 import numpy as np
 
-def grayScale(img, fromCV2 = False):
+def grayScale(img, fromCV2 = True):
     if fromCV2:
         newImg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         return newImg.astype(np.uint8)
@@ -24,6 +24,13 @@ def grayScale(img, fromCV2 = False):
 
 def monoChrome(img, fromCV2 = True, thresh = 127):
     if fromCV2:
-        grayImg = grayScale(img,fromCV2)
+        try:
+            channel = img.shape[2]
+        except:
+            channel = 1
+        if channel == 3:
+            grayImg = grayScale(img,fromCV2)
+        elif channel == 1:
+            grayImg = img
         newImg = cv2.threshold(grayImg, thresh, 255, cv2.THRESH_BINARY)[1]
         return newImg
