@@ -63,40 +63,40 @@ class Application(QtWidgets.QMainWindow):
                 self._print("Gambar sudah dalam bentuk grayscale")
                 return
             else:
-                self._print("Processing...")
+                self._print("Proses...")
                 self.convImg = gs.grayScale(self.img, fromCV2 = True)
                 self.imgFormat = "g"
         elif choosen == "Monochrome":
-            self._print("Processing...")
+            self._print("Proses...")
             self.convImg = gs.monoChrome(self.img, fromCV2 = True)
             self.imgFormat = "g"
         elif choosen == "Average Blur":
-            self._print("Processing...")
+            self._print("Proses...")
             self.convImg = blur(self.img)
             self.imgFormat = "rgb"
         elif choosen == "Gaussian Blur":
-            self._print("Processing...")
+            self._print("Proses...")
             self.convImg = gauss(self.img)
             self.imgFormat = "rgb"
         elif choosen == "Median Blur":
-            self._print("Processing...")
+            self._print("Proses...")
             self.convImg = median(self.img)
             self.imgFormat = "rgb"
         elif choosen == "CDF":
-            self._print("Processing...")
+            self._print("Proses...")
             self.convImg = histo.equalize(self.img)
             self.imgFormat = "g"
             print(histo.hist(self.img,False))
         elif choosen == "CLAHE":
-            self._print("Processing...")
+            self._print("Proses...")
             self.convImg = histo.clahe(self.img)
             self.imgFormat = "g"
         elif choosen == "Bilateral":
-            self._print("Processing...")
+            self._print("Proses...")
             self.convImg = filters.bilateral(self.img)
             self.imgFormat = "rgb"
         elif choosen == "Sobel":
-            self._print("Processing...")
+            self._print("Proses...")
             self.convImg = filters.sobel(self.img)
             self.imgFormat = "g"
         else:
@@ -104,15 +104,15 @@ class Application(QtWidgets.QMainWindow):
             return -2
 
         self._showPhoto(self.convImg, result = True)
-        self._print("Done!")
+        self._print("Selesai!")
         return 0
 
     def _saveConverted(self):
         if len(self.convImg) > 0 :
             path = conv.saveImage(self.filename, self.convImg)
-            self._print("Saved to %s" %path)
+            self._print("Tersimpan ke %s" %path)
             return 0
-        self._print("Nothing to save")
+        self._print("Tidak ada gambar yang dapat disimpan")
         return -1
 
     def _bestFit(self, img, size):

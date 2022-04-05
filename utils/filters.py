@@ -21,4 +21,3 @@ def horizontal(img):
  
 def bilateral(img, k = 5, sgs = 75, sgr = 75):
     return cv2.bilateralFilter(img, k, sgs, sgr)
-    #return img
