@@ -4,7 +4,8 @@ import sys
 from PyQt5 import QtGui, QtWidgets, uic
 
 from utils import img_converter as conv
-from utils import gray_scale as gs
+from utils.gray_scale import grayScale as gray
+from utils.threshold import monoChrome as mono
 from utils import histogram as histo
 from utils import filters
 from utils.blur import blur, gauss, median
@@ -20,10 +21,12 @@ class Application(QtWidgets.QMainWindow):
         self.imgFormat = "rgb"
         self.convImg = []
         self.lastPath = os.getcwd()
-
-        self.findChild(QtWidgets.QPushButton, ('openBut')).clicked.connect(self._openClicked)
+        
+        #self.findChild(QtWidgets.QPushButton, ('openBut')).clicked.connect(self._openClicked)
+        #self.findChild(QtWidgets.QPushButton, ('saveBut')).clicked.connect(self._saveConverted)
+        self.findChild(QtWidgets.QAction, ('actionOpen_Image')).triggered.connect(self._openClicked) 
+        self.findChild(QtWidgets.QAction, ('actionSave')).triggered.connect(self._saveConverted)
         self.findChild(QtWidgets.QPushButton, ('convertBut')).clicked.connect(self._convert)
-        self.findChild(QtWidgets.QPushButton, ('saveBut')).clicked.connect(self._saveConverted)
         
         self.listWidget = self.findChild(QtWidgets.QListWidget, ('listWidget'))
         
@@ -33,13 +36,15 @@ class Application(QtWidgets.QMainWindow):
 
         self.previewLabel.setHidden(True)
         self.showLabel.setHidden(True)
-        
-        #self.show()
-        self.showMaximized()
+        self.previewLabel.setAcceptDrops(True)
+        self.setAcceptDrops(True)
+
+        self.show()
+        #self.showMaximized()
 
     def _openClicked(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 
-                'Open',self.lastPath,
+                'Buka',self.lastPath,
                 "Gambar (*.jpg *.jpeg *.png *.tif *.raw *.bmp *.JPG *.JPEG *.PNG *.TIF *.RAW *.BMP)")[0]
         splitPath = filename.split('/')
         self.lastPath = ""
@@ -64,11 +69,11 @@ class Application(QtWidgets.QMainWindow):
                 return
             else:
                 self._print("Proses...")
-                self.convImg = gs.grayScale(self.img, fromCV2 = True)
+                self.convImg = gray(self.img, fromCV2 = True)
                 self.imgFormat = "g"
         elif choosen == "Monochrome":
             self._print("Proses...")
-            self.convImg = gs.monoChrome(self.img, fromCV2 = True)
+            self.convImg = mono(self.img, fromCV2 = True)
             self.imgFormat = "g"
         elif choosen == "Average Blur":
             self._print("Proses...")
