@@ -6,13 +6,15 @@ from PIL import Image
 
 def openImage(path):
     mode = Image.open(path).mode
-    print(mode)
     if mode == "L":
         return cv2.imread(path,0), mode
     return cv2.imread(path,1), mode
 
 def rgbgr(img):
     return cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+
+def modeCheck(img):
+    return Image.fromarray(img).mode    
 
 def resize(img, scale = 0.7):
     width = int(img.shape[1] * scale)

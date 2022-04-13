@@ -16,6 +16,7 @@ class Application(QtWidgets.QMainWindow):
         uic.loadUi(uiPath, self)
 	
         self.img = None
+        self.lastImg = None
         self.filename = None
         self.mode = None
         self.imgFormat = "rgb"
@@ -27,16 +28,18 @@ class Application(QtWidgets.QMainWindow):
         self.findChild(QtWidgets.QAction, ('actionOpen_Image')).triggered.connect(self._openClicked) 
         self.findChild(QtWidgets.QAction, ('actionSave')).triggered.connect(self._saveConverted)
         self.findChild(QtWidgets.QPushButton, ('convertBut')).clicked.connect(self._convert)
+        self.findChild(QtWidgets.QPushButton, ('geserBut')).clicked.connect(self._geser)
         
         self.listWidget = self.findChild(QtWidgets.QListWidget, ('listWidget'))
         
         self.previewLabel = self.findChild(QtWidgets.QLabel, ('previewLabel'))
         self.showLabel = self.findChild(QtWidgets.QLabel, ('showLabel'))
+        self.showLClone = self.showLabel
         self.consoleLabel = self.findChild(QtWidgets.QLabel, ('consoleLabel'))
 
         self.previewLabel.setHidden(True)
         self.showLabel.setHidden(True)
-        self.previewLabel.setAcceptDrops(True)
+        #self.previewLabel.setAcceptDrops(True)
         self.setAcceptDrops(True)
 
         self.show()
@@ -56,22 +59,42 @@ class Application(QtWidgets.QMainWindow):
             self._showPhoto(self.img)
         self._print()
 
+    def _cekGambar(self, geser = False):
+        #-1:belum ada gambar , -2:gambar belum dikonversi
+        try:
+            if not self.img: 
+                self._print("Gambar belum dipilih!")
+                return -1
+        except:
+            try:
+                if not self.convImg & geser:
+                    self._print("Gambar belum dikonversi!")
+                    return -2
+            except:
+                pass
+        return 0
+
     def _convert(self):
-        if not self.mode: 
-            self._print("Gambar belum dipilih!")
-            return -1
+        #-1 sudah dikonversi, -2: gambar belum dipilih
+        if self._cekGambar() < 0 : return -1
         
         # Cek list terpilih
-        choosen = self.listWidget.currentItem().text()
+        try:
+            choosen = self.listWidget.currentItem().text()
+        except:
+            choosen = ''
         if choosen == "Gray Scale":
-            if self.mode == "L":
-                self._print("Gambar sudah dalam bentuk grayscale")
-                return
+            if self.mode == 'L' or self.mode == '1':
+                self._print("Gambar sudah dalam bentuk Gray Scale")
+                return -1
             else:
                 self._print("Proses...")
                 self.convImg = gray(self.img, fromCV2 = True)
                 self.imgFormat = "g"
         elif choosen == "Monochrome":
+            #if self.mode == '1':
+            #    self._print("Gambar sudah dalam bentuk Monochrome")
+            #    return -1
             self._print("Proses...")
             self.convImg = mono(self.img, fromCV2 = True)
             self.imgFormat = "g"
@@ -110,6 +133,20 @@ class Application(QtWidgets.QMainWindow):
 
         self._showPhoto(self.convImg, result = True)
         self._print("Selesai!")
+        return 0
+
+    def _geser(self):
+        if self._cekGambar() < 0 : return -1
+        
+        try:
+            self.lastImg = self.img
+            self.img = self.convImg
+            self._showPhoto(self.img, False)
+            self.showLabel = self.showLClone
+        
+            self.mode = conv.modeCheck(self.img)
+        except:
+            return -1
         return 0
 
     def _saveConverted(self):

@@ -438,7 +438,7 @@ selection-background-color: rgb(193, 255, 249);</string>
      <item row="0" column="0">
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="2" column="1">
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="geserBut">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
