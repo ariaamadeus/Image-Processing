@@ -252,8 +252,7 @@ class Application(QtWidgets.QMainWindow):
         else:
             self.previewLabel.setPixmap(QtGui.QPixmap.fromImage(image))
             self.previewLabel.setHidden(False)
-            if self.comboIndex == 0:
-                self._convert()
+            self._convert()
         self._print()
 
     def _print(self, text = ""):
