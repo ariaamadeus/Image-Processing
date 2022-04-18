@@ -19,29 +19,6 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout"/>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuview">
-    <property name="title">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuasdf">
-    <property name="title">
-     <string> </string>
-    </property>
-   </widget>
-   <addaction name="menuview"/>
-   <addaction name="menuasdf"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget_2">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -149,13 +126,123 @@
        </item>
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="page">
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
+          <layout class="QHBoxLayout" name="horizontalLayout"/>
+         </widget>
+         <widget class="QWidget" name="page_2">
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
             <widget class="QListWidget" name="listWidget">
+             <item>
+              <property name="text">
+               <string>Average Blur</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Gaussian Blur</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Median Blur</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_3">
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="0">
+            <widget class="QListWidget" name="listWidget_2">
+             <item>
+              <property name="text">
+               <string>Bilateral</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Sobel</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_4">
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0">
+            <widget class="QListWidget" name="listWidget_3">
+             <item>
+              <property name="text">
+               <string>CDF</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>CLAHE</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_5">
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="0">
+            <widget class="QListWidget" name="listWidget_4">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -197,47 +284,7 @@ selection-background-color: rgb(193, 255, 249);</string>
              </item>
              <item>
               <property name="text">
-               <string>Gray Scale</string>
-              </property>
-              <property name="font">
-               <font>
-                <family>Umpush</family>
-                <pointsize>16</pointsize>
-               </font>
-              </property>
-              <property name="background">
-               <brush brushstyle="NoBrush">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Average Blur</string>
-              </property>
-              <property name="font">
-               <font>
-                <family>Umpush</family>
-                <pointsize>16</pointsize>
-               </font>
-              </property>
-              <property name="foreground">
-               <brush brushstyle="NoBrush">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Gaussian Blur</string>
+               <string>Truncate</string>
               </property>
               <property name="font">
                <font>
@@ -248,7 +295,7 @@ selection-background-color: rgb(193, 255, 249);</string>
              </item>
              <item>
               <property name="text">
-               <string>Median Blur</string>
+               <string>To Zero</string>
               </property>
               <property name="font">
                <font>
@@ -259,7 +306,7 @@ selection-background-color: rgb(193, 255, 249);</string>
              </item>
              <item>
               <property name="text">
-               <string>CDF</string>
+               <string>To Zero Inverted</string>
               </property>
               <property name="font">
                <font>
@@ -270,29 +317,7 @@ selection-background-color: rgb(193, 255, 249);</string>
              </item>
              <item>
               <property name="text">
-               <string>CLAHE</string>
-              </property>
-              <property name="font">
-               <font>
-                <family>Umpush</family>
-                <pointsize>16</pointsize>
-               </font>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Bilateral</string>
-              </property>
-              <property name="font">
-               <font>
-                <family>Umpush</family>
-                <pointsize>16</pointsize>
-               </font>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Sobel</string>
+               <string>Otsu</string>
               </property>
               <property name="font">
                <font>
@@ -303,9 +328,64 @@ selection-background-color: rgb(193, 255, 249);</string>
              </item>
             </widget>
            </item>
+           <item row="0" column="1">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Umpush</family>
+                </font>
+               </property>
+               <property name="text">
+                <string>Threshold</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="spinBox_4">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Umpush</family>
+                </font>
+               </property>
+               <property name="maximum">
+                <number>255</number>
+               </property>
+               <property name="value">
+                <number>127</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_2"/>
         </widget>
        </item>
        <item>
@@ -339,84 +419,8 @@ selection-background-color: rgb(193, 255, 249);</string>
        </item>
       </layout>
      </item>
-     <item row="0" column="1">
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <family>Umpush</family>
-          </font>
-         </property>
-         <property name="text">
-          <string>Threshold</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="spinBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <family>Umpush</family>
-          </font>
-         </property>
-         <property name="maximum">
-          <number>255</number>
-         </property>
-         <property name="value">
-          <number>127</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QToolBar" name="Toolbar">
-   <property name="font">
-    <font>
-     <family>Umpush</family>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="windowTitle">
-    <string>Toolbar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionOpen_Image"/>
-   <addaction name="actionSave"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_4">
    <property name="font">
@@ -512,14 +516,61 @@ selection-background-color: rgb(193, 255, 249);</string>
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="font">
+    <font>
+     <family>Umpush</family>
+    </font>
+   </property>
+   <property name="windowTitle">
+    <string>Tool Bar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen_Image"/>
+   <addaction name="actionSave"/>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFetch">
+    <property name="title">
+     <string>Right Click Here</string>
+    </property>
+   </widget>
+   <addaction name="menuFetch"/>
+  </widget>
   <action name="actionOpen_Image">
    <property name="text">
     <string>Open Image</string>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
     <string>Save</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>Umpush</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
   </action>
  </widget>
