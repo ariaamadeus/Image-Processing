@@ -5,7 +5,9 @@ requirements:
 ```pip install```
  
 ```
-PyQt5
+PyQt5==5.15
+PyQtChart==5.15 //(versinya sama) 
+
 opencv-python
 opencv-python-headless
 opencv-contrib-python
