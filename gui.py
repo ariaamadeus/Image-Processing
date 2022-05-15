@@ -1,7 +1,8 @@
 import os
 import sys
 
-from PyQt5 import QtGui, QtWidgets, uic
+from PyQt5 import QtGui, QtWidgets, uic, QtCore
+#from PySide2 import *
 
 from utils import img_converter as conv
 from utils.gray_scale import grayScale as gray
@@ -9,16 +10,20 @@ from utils.threshold import monoChrome, truncate, toZero, toZeroInv, otsu
 from utils import histogram as histo
 from utils import filters
 from utils.blur import blur, gauss, median
+from utils.contours import connected, contours, \
+    conArea, perimeter, center, erode, dilate, opening, closing, gradient 
+
+from graph.graph import linePlot
 
 class Application(QtWidgets.QMainWindow):
     def __init__(self,uiPath):
         super().__init__()
-        uic.loadUi(uiPath, self) # uiPath = rootwindow.ui
+        self.ui = uic.loadUi(uiPath, self) # uiPath = rootwindow.ui
 	
         ''' Variabel'''
         
-        self.img = None
-        self.lastImg = None
+        self.img = []
+        self.lastImg = []
         self.filename = None
         self.mode = None
         self.imgFormat = "rgb"
@@ -29,18 +34,16 @@ class Application(QtWidgets.QMainWindow):
         
         ''' Tombol '''
         
-        #self.findChild(QtWidgets.QPushButton, ('openBut')).clicked.connect(self._openClicked)
-        #self.findChild(QtWidgets.QPushButton, ('saveBut')).clicked.connect(self._saveConverted)
         self.findChild(QtWidgets.QAction, ('actionOpen_Image')).triggered.connect(self._openClicked) 
         self.findChild(QtWidgets.QAction, ('actionSave')).triggered.connect(self._saveConverted)
-        #self.findChild(QtWidgets.QPushButton, ('convertBut')).clicked.connect(self._convert)
-        convertBut = self.findChild(QtWidgets.QPushButton, ('convertBut'))
+        self.findChild(QtWidgets.QAction, ('actionSave_2')).triggered.connect(self._saveConvertedLeft)
         self.findChild(QtWidgets.QPushButton, ('geserBut')).clicked.connect(self._geser)
+        convertBut = self.findChild(QtWidgets.QPushButton, ('convertBut'))
         
         convertBut.setVisible(False)
+
         ''' Stacked Widgets (depend ke pilihan dari Combo Box)'''
 
-        #self.stackedWidget = self.findChild(QtGui.QStackedWidget, ('stackedWidget'))
         self.stackedWidget = self.findChild(QtWidgets.QStackedWidget, ('stackedWidget'))
 
         ''' Combo Box '''
@@ -55,11 +58,13 @@ class Application(QtWidgets.QMainWindow):
         self.listWidget_2 = self.findChild(QtWidgets.QListWidget, ('listWidget_2'))
         self.listWidget_3 = self.findChild(QtWidgets.QListWidget, ('listWidget_3'))
         self.listWidget_4 = self.findChild(QtWidgets.QListWidget, ('listWidget_4'))
+        self.listWidget_5 = self.findChild(QtWidgets.QListWidget, ('listWidget_5'))
 
         self.listWidget.itemClicked.connect(self._convert)
         self.listWidget_2.itemClicked.connect(self._convert)
         self.listWidget_3.itemClicked.connect(self._convert)
         self.listWidget_4.itemClicked.connect(self._convert)
+        self.listWidget_5.itemClicked.connect(self._convert)
         
         ''' Spin Box '''
 
@@ -77,15 +82,53 @@ class Application(QtWidgets.QMainWindow):
         self.previewLabel.setHidden(True)
         self.showLabel.setHidden(True)
         
+        ''' Dock Widgets '''
+
+        self.dockWidget = self.findChild(QtWidgets.QDockWidget, ('dockWidget'))
+        #self.dockWidget.setVisible(True)
+
+        ''' Plot '''
+
+        self.scrollArea = self.findChild(QtWidgets.QScrollArea, ('scrollArea'))
+        self.linePlot = linePlot(title = "Histogram")
+        self._createLinePlot(self.scrollArea, 0, self.linePlot)
+        self.dockWidget.setVisible(False)
+
         ''' Drag & drop gambar '''
         
+        # Kenapa tidak bisa yaa? :)
         #self.previewLabel.setAcceptDrops(True)
         #self.setAcceptDrops(True)
 
-        ''' show '''
+        ''' Show '''
 
         self.show()
         #self.showMaximized()
+
+    def dropEvent(self,event):
+        # Belum bisa
+        if event.mimeData().hasImage():
+            print('Ok')
+            self._showPhoto(event.mimeData().imageData())
+            #self.previewLabel.setPixmap(QPixmap.fromImage(QImage(event.mimeData().imageData())))
+
+    def _createLinePlot(self, scrollArea, rowN, thePlot):
+        frame = QtWidgets.QFrame(scrollArea)
+        frame.setObjectName(u"frame")
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, 
+            QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(frame.sizePolicy().hasHeightForWidth())
+        frame.setSizePolicy(sizePolicy)
+        frame.setMinimumSize(QtCore.QSize(800, 400))
+        frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        gridLayout = QtWidgets.QGridLayout(frame)
+        gridLayout.setObjectName(u"gridLayout")
+
+        gridLayout.addWidget(thePlot.theGraph(),rowN,0,1,1)
+        self.ui.gridLayout_9.addWidget(frame)
 
     def _changeComboBox(self, val):
         self.comboIndex = val
@@ -130,6 +173,9 @@ class Application(QtWidgets.QMainWindow):
         #-1 sudah dikonversi, -2: gambar belum dipilih
         if self._cekGambar() < 0 : return -1
         
+        # boolean
+        histoBool = False
+
         # Cek list terpilih
         try:
             if self.comboIndex == 0:
@@ -142,6 +188,8 @@ class Application(QtWidgets.QMainWindow):
                 choosen = self.listWidget_3.currentItem().text()
             if self.comboIndex == 4:
                 choosen = self.listWidget_4.currentItem().text()
+            if self.comboIndex == 5:
+                choosen = self.listWidget_5.currentItem().text()
         except:
             choosen = ''
         if choosen == "Gray Scale":
@@ -168,7 +216,15 @@ class Application(QtWidgets.QMainWindow):
             self._print("Proses...")
             self.convImg = histo.equalize(self.img)
             self.imgFormat = "g"
-            print(histo.hist(self.img,False))
+            # Plot Histogram
+            maxHist = 0
+            self.linePlot.clear()
+            for i, rgbHist in enumerate(histo.hist(self.img, gs = False)):
+                for j, hist in enumerate(rgbHist):
+                    if hist > maxHist : maxHist = hist
+                    self.linePlot.plotRGB(j, hist, color = i)
+            self.linePlot.setYMax(maxHist+5)
+            histoBool = True
         elif choosen == "CLAHE":
             self._print("Proses...")
             self.convImg = histo.clahe(self.img)
@@ -201,15 +257,47 @@ class Application(QtWidgets.QMainWindow):
             self._print("Proses...")
             self.convImg = otsu(self.img, threshold = self.threshold)
             self.imgFormat = "g"
+        elif choosen == "Connected":
+            self._print("Proses...")
+            n, self.convImg = connected(self.img)
+            print("%s Object"%n)
+            self.imgFormat = "rgb"
+        elif choosen == "Contours":
+            self._print("Proses...")
+            self.convImg = contours(self.img, draw = True, color = (255,0,255), thick = 100)
+            self.imgFormat = "rgb"
+        elif choosen == "Erode":
+            self._print("Proses...")
+            self.convImg = erode(self.img, kernel = 3, itterations = 1)
+            self.imgFormat = "rgb"
+        elif choosen == "Dilate":
+            self._print("Proses...")
+            self.convImg = dilate(self.img, kernel = 3, itterations = 1)
+            self.imgFormat = "rgb"
+        elif choosen == "Opening":
+            self._print("Proses...")
+            self.convImg = opening(self.img, kernel = 3, itterations = 1)
+            self.imgFormat = "rgb"
+        elif choosen == "Closing":
+            self._print("Proses...")
+            self.convImg = closing(self.img, kernel = 3, itterations = 1)
+            self.imgFormat = "rgb"
+        elif choosen == "Gradient":
+            self._print("Proses...")
+            self.convImg = gradient(self.img, kernel = 3, itterations = 1)
+            self.imgFormat = "rgb"
         else:
             self._print("Mode belum dipilih!")
             return -2
+
+        self.dockWidget.setVisible(True) if histoBool else self.dockWidget.setVisible(False)
 
         self._showPhoto(self.convImg, result = True)
         self._print("Selesai!")
         return 0
 
     def _geser(self):
+        #-1 Tidak ada gambar
         if self._cekGambar(geser = True) < 0 : return -1
         
         try:
@@ -224,9 +312,18 @@ class Application(QtWidgets.QMainWindow):
         return 0
 
     def _saveConverted(self):
+        #-1 Tidak ada gambar
         if len(self.convImg) > 0 :
             path = conv.saveImage(self.filename, self.convImg)
-            self._print("Tersimpan ke %s" %path)
+            self._print("Kanan Tersimpan ke %s" %path)
+            return 0
+        self._print("Tidak ada gambar yang dapat disimpan")
+        return -1
+
+    def _saveConvertedLeft(self):
+        if len(self.img) > 0 :
+            path = conv.saveImage(self.filename, self.img)
+            self._print("Kiri Tersimpan ke %s" %path)
             return 0
         self._print("Tidak ada gambar yang dapat disimpan")
         return -1
@@ -246,6 +343,7 @@ class Application(QtWidgets.QMainWindow):
                              image.strides[0],
                              QtGui.QImage.Format_RGB888 if self.imgFormat == "rgb" else QtGui.QImage.Format_Grayscale8)
 
+        #image = image.transformed(QtGui.QTransform().rotate(50))
         if result:
             self.showLabel.setPixmap(QtGui.QPixmap.fromImage(image))
             self.showLabel.setHidden(False)

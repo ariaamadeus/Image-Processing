@@ -9,7 +9,7 @@ def grayScale(img, fromCV2 = True):
         return newImg.astype(np.uint8)
     else:
         height, width, channel = img.shape
-        newImage = np.zeros(shape=(height,width))
+        newImage = np.zeros(shape=(height,width,1))
 
         y = 0
         for piyel in img:

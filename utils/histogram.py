@@ -6,7 +6,8 @@ from .img_converter import rgbgr
 
 def hist(img, gs = True):
     if gs:
-        return [cv2.calcHist(img, 0, None, [256],[0,256])]
+        #print(gray(img).shape)
+        return [cv2.calcHist(gray(img), 0, None, [256],[0,256])]
     else:
         histlist = []
         for i in range(0,3):
