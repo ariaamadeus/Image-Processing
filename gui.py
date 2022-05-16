@@ -24,6 +24,7 @@ class Application(QtWidgets.QMainWindow):
         
         self.img = []
         self.lastImg = []
+        self.firstImg = []
         self.filename = None
         self.mode = None
         self.imgFormat = "rgb"
@@ -37,6 +38,7 @@ class Application(QtWidgets.QMainWindow):
         self.findChild(QtWidgets.QAction, ('actionOpen_Image')).triggered.connect(self._openClicked) 
         self.findChild(QtWidgets.QAction, ('actionSave')).triggered.connect(self._saveConverted)
         self.findChild(QtWidgets.QAction, ('actionSave_2')).triggered.connect(self._saveConvertedLeft)
+        self.findChild(QtWidgets.QAction, ('actionReset')).triggered.connect(self._resetImage)
         self.findChild(QtWidgets.QPushButton, ('geserBut')).clicked.connect(self._geser)
         convertBut = self.findChild(QtWidgets.QPushButton, ('convertBut'))
         
@@ -111,6 +113,10 @@ class Application(QtWidgets.QMainWindow):
             print('Ok')
             self._showPhoto(event.mimeData().imageData())
             #self.previewLabel.setPixmap(QPixmap.fromImage(QImage(event.mimeData().imageData())))
+    
+    def _resetImage(self):
+        self.img = self.firstImg
+        self._showPhoto(self.img)
 
     def _createLinePlot(self, scrollArea, rowN, thePlot):
         frame = QtWidgets.QFrame(scrollArea)
@@ -147,6 +153,7 @@ class Application(QtWidgets.QMainWindow):
         if len(filename):
             self.filename = filename
             self.img, self.mode= conv.openImage(self.filename)
+            self.firstImg = self.img
             self._showPhoto(self.img)
         self._print()
 
@@ -241,6 +248,10 @@ class Application(QtWidgets.QMainWindow):
             self._print("Proses...")
             self.convImg = monoChrome(self.img, fromCV2 = True, threshold = self.threshold)
             self.imgFormat = "g"
+        elif choosen == "Monochrome Inverse":
+            self._print("Proses...")
+            self.convImg = monoChrome(self.img, fromCV2 = True, threshold = self.threshold, invert = True)
+            self.imgFormat = "g"
         elif choosen == "Truncate":
             self._print("Proses...")
             self.convImg = truncate(self.img, threshold = self.threshold)
@@ -262,29 +273,33 @@ class Application(QtWidgets.QMainWindow):
             n, self.convImg = connected(self.img)
             print("%s Object"%n)
             self.imgFormat = "rgb"
-        elif choosen == "Contours":
+        elif choosen == "Contours Mask":
             self._print("Proses...")
-            self.convImg = contours(self.img, draw = True, color = (255,0,255), thick = 100)
+            self.convImg = contours(self.img, drawImg = self.img, draw = True, color = (0,255,255), thick = 4)
+            self.imgFormat = "rgb"
+        elif choosen == "Contours First Image":
+            self._print("Proses...")
+            self.convImg = contours(self.img, drawImg = self.firstImg, draw = True, color = (0,255,255), thick = 4)
             self.imgFormat = "rgb"
         elif choosen == "Erode":
             self._print("Proses...")
-            self.convImg = erode(self.img, kernel = 3, itterations = 1)
+            self.convImg = erode(self.img, kernel = (5,5), itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Dilate":
             self._print("Proses...")
-            self.convImg = dilate(self.img, kernel = 3, itterations = 1)
+            self.convImg = dilate(self.img, kernel = (5,5), itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Opening":
             self._print("Proses...")
-            self.convImg = opening(self.img, kernel = 3, itterations = 1)
+            self.convImg = opening(self.img, kernel = (5,5), itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Closing":
             self._print("Proses...")
-            self.convImg = closing(self.img, kernel = 3, itterations = 1)
+            self.convImg = closing(self.img, kernel = (5,5), itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Gradient":
             self._print("Proses...")
-            self.convImg = gradient(self.img, kernel = 3, itterations = 1)
+            self.convImg = gradient(self.img, kernel = (5,5), itterations = 1)
             self.imgFormat = "rgb"
         else:
             self._print("Mode belum dipilih!")
@@ -334,6 +349,7 @@ class Application(QtWidgets.QMainWindow):
         return hScale if hScale < wScale else wScale 
 
     def _showPhoto(self, image, result = False):
+        if self._cekGambar() < 0 : return -1
         image = conv.rgbgr(image) if self.imgFormat == "rgb" else image
 
         image = conv.resize(image, scale = self._bestFit(image,480))
