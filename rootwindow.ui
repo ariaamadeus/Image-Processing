@@ -160,7 +160,7 @@ background-color: rgb(255, 255, 255);</string>
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>5</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QHBoxLayout" name="horizontalLayout"/>
@@ -311,6 +311,17 @@ selection-background-color: rgb(193, 255, 249);</string>
              </item>
              <item>
               <property name="text">
+               <string>Monochrome Inverse</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+             <item>
+              <property name="text">
                <string>Truncate</string>
               </property>
               <property name="font">
@@ -430,7 +441,18 @@ selection-background-color: rgb(193, 255, 249);</string>
              </item>
              <item>
               <property name="text">
-               <string>Contours</string>
+               <string>Contours Mask</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Contours First Image</string>
               </property>
               <property name="font">
                <font>
@@ -653,6 +675,7 @@ background-color: rgb(255, 255, 255);</string>
    <addaction name="actionOpen_Image"/>
    <addaction name="actionSave_2"/>
    <addaction name="actionSave"/>
+   <addaction name="actionReset"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -725,6 +748,11 @@ background-color: rgb(255, 255, 255);</string>
      <weight>75</weight>
      <bold>true</bold>
     </font>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>Reset</string>
    </property>
   </action>
  </widget>

@@ -3,7 +3,7 @@ import numpy as np
 
 from .gray_scale import grayScale as gray
 
-def monoChrome(img, fromCV2 = True, threshold = 127):
+def monoChrome(img, fromCV2 = True, threshold = 127, invert = False):
     if fromCV2:
         try:
             channel = img.shape[2]
@@ -13,7 +13,8 @@ def monoChrome(img, fromCV2 = True, threshold = 127):
             grayImg = gray(img,fromCV2)
         elif channel == 1:
             grayImg = img
-        newImg = cv2.threshold(grayImg, threshold, 255, cv2.THRESH_BINARY)[1]
+        mode = cv2.THRESH_BINARY_INV if invert else cv2.THRESH_BINARY
+        newImg = cv2.threshold(grayImg, threshold, 255, mode)[1]
         return newImg
 
 def truncate(img, threshold = 127):
