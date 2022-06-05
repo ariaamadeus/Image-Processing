@@ -38,23 +38,23 @@ def center(contours):
             ])
     return centers
 
-def erode(img, kernel = (5,5), itterations = 1):
+def erode(img, kernel = (5,5), itterations = 3):
     return cv2.erode(img, kernel, itterations)
 
-def dilate(img, kernel = (5,5), itterations = 1):
+def dilate(img, kernel = (5,5), itterations = 3):
     return cv2.dilate(img, kernel, itterations)
 
-def opening(img, kernel = (5,5), itterations = 1):
+def opening(img, kernel = (5,5), itterations = 3):
     for x in range(0,itterations):
         img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
     return img
 
-def closing(img, kernel = (5,5), itterations = 1):
+def closing(img, kernel = (5,5), itterations = 3):
     for x in range(0,itterations):
         img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
     return img
 
-def gradient(img, kernel = (5,5), itterations = 1):
+def gradient(img, kernel = (5,5), itterations = 3):
     for x in range(0,itterations):
         img = cv2.morphologyEx(img, cv2.MORPH_GRADIENT, kernel)
     return img

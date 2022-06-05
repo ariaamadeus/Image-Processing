@@ -147,6 +147,11 @@ background-color: rgb(255, 255, 255);</string>
              <string>Contouring</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>Glomerulus</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>
@@ -520,6 +525,7 @@ selection-background-color: rgb(193, 255, 249);</string>
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="page_7"/>
         </widget>
        </item>
        <item>

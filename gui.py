@@ -301,6 +301,10 @@ class Application(QtWidgets.QMainWindow):
             self._print("Proses...")
             self.convImg = gradient(self.img, kernel = (5,5), itterations = 1)
             self.imgFormat = "rgb"
+        elif choosen == "Glomerulus":
+            self._print("Proses...")
+            self.convImg = glomerulus(self.img)
+            self.imgFormat = "rgb"
         else:
             self._print("Mode belum dipilih!")
             return -2
