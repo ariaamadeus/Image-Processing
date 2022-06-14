@@ -32,3 +32,6 @@ def toZeroInv(img, threshold = 127):
 def otsu(img, threshold = 127):
     grayImg = gray(img, fromCV2 = True)
     return cv2.threshold(grayImg, threshold, 255, cv2.THRESH_OTSU)[1]
+
+def inRange(img, lower, upper):
+    return cv2.inRange(img, lower, upper)

@@ -6,12 +6,13 @@ from PyQt5 import QtGui, QtWidgets, uic, QtCore
 
 from utils import img_converter as conv
 from utils.gray_scale import grayScale as gray
-from utils.threshold import monoChrome, truncate, toZero, toZeroInv, otsu
+from utils.threshold import monoChrome, truncate, toZero, toZeroInv, otsu, inRange
 from utils import histogram as histo
 from utils import filters
 from utils.blur import blur, gauss, median
 from utils.contours import connected, contours, \
     conArea, perimeter, center, erode, dilate, opening, closing, gradient 
+from utils.glomerulus import glomerulus
 
 from graph.graph import linePlot
 
@@ -31,6 +32,10 @@ class Application(QtWidgets.QMainWindow):
         self.convImg = []
         self.lastPath = os.getcwd()
         self.threshold = 127
+        self.LowHSV = (0,0,0)
+        self.UpHSV = (0,0,0)
+        self.BlurXY = (5,5)
+        self.ContXY = (0,0)
         self.comboIndex = 0
         
         ''' Tombol '''
@@ -47,6 +52,7 @@ class Application(QtWidgets.QMainWindow):
         ''' Stacked Widgets (depend ke pilihan dari Combo Box)'''
 
         self.stackedWidget = self.findChild(QtWidgets.QStackedWidget, ('stackedWidget'))
+        self.stackedWidget_2 = self.findChild(QtWidgets.QStackedWidget, ('stackedWidget_2'))
 
         ''' Combo Box '''
         
@@ -70,9 +76,29 @@ class Application(QtWidgets.QMainWindow):
         
         ''' Spin Box '''
 
-        self.spinBox_4 = self.findChild(QtWidgets.QSpinBox, ('spinBox_4'))
+        self.spinBox = self.findChild(QtWidgets.QSpinBox, ('spinBox')) #Xcont
+        self.spinBox_2 = self.findChild(QtWidgets.QSpinBox, ('spinBox_2')) #Ycont
+        self.spinBox_4 = self.findChild(QtWidgets.QSpinBox, ('spinBox_4')) #Threshold
+        self.spinBox_3 = self.findChild(QtWidgets.QSpinBox, ('spinBox_3')) #Xblur
+        self.spinBox_5 = self.findChild(QtWidgets.QSpinBox, ('spinBox_5')) #Yblur
+        self.LowH = self.findChild(QtWidgets.QDoubleSpinBox, ('LowH')) #HSV Threshold
+        self.LowS = self.findChild(QtWidgets.QDoubleSpinBox, ('LowS'))
+        self.LowV = self.findChild(QtWidgets.QDoubleSpinBox, ('LowV'))
+        self.UpH = self.findChild(QtWidgets.QDoubleSpinBox, ('UpH'))
+        self.UpS = self.findChild(QtWidgets.QDoubleSpinBox, ('UpS'))
+        self.UpV = self.findChild(QtWidgets.QDoubleSpinBox, ('UpV'))
 
+        self.spinBox.valueChanged.connect(self._convertSpin)
+        self.spinBox_2.valueChanged.connect(self._convertSpin)
         self.spinBox_4.valueChanged.connect(self._convertSpin)
+        self.spinBox_3.valueChanged.connect(self._convertSpin)
+        self.spinBox_5.valueChanged.connect(self._convertSpin)
+        self.LowH.valueChanged.connect(self._convertSpin)
+        self.LowS.valueChanged.connect(self._convertSpin)
+        self.LowV.valueChanged.connect(self._convertSpin)
+        self.UpH.valueChanged.connect(self._convertSpin)
+        self.UpS.valueChanged.connect(self._convertSpin)
+        self.UpV.valueChanged.connect(self._convertSpin)
 
         ''' Label '''
         
@@ -139,7 +165,7 @@ class Application(QtWidgets.QMainWindow):
     def _changeComboBox(self, val):
         self.comboIndex = val
         self.stackedWidget.setCurrentIndex(val)
-        if val == 0:
+        if val == 0 or val == 6:
             self._convert()
 
     def _openClicked(self):
@@ -174,6 +200,17 @@ class Application(QtWidgets.QMainWindow):
 
     def _convertSpin(self):
         self.threshold = self.spinBox_4.value()
+        self.LowHSV = (
+                self.LowH.value(),
+                self.LowS.value(),
+                self.LowV.value())
+        self.UpHSV = (
+                self.UpH.value(),
+                self.UpS.value(),
+                self.UpV.value())
+        self.BlurXY = (self.spinBox_3.value(), self.spinBox_5.value())
+        self.ContXY = (self.spinBox,self.spinBox_2)
+        print("NILAIBLUR:",self.BlurXY)
         self._convert()
 
     def _convert(self):
@@ -181,6 +218,7 @@ class Application(QtWidgets.QMainWindow):
         if self._cekGambar() < 0 : return -1
         
         # boolean
+        inRangebool = False
         histoBool = False
 
         # Cek list terpilih
@@ -196,7 +234,11 @@ class Application(QtWidgets.QMainWindow):
             if self.comboIndex == 4:
                 choosen = self.listWidget_4.currentItem().text()
             if self.comboIndex == 5:
+                print('masuk2')
                 choosen = self.listWidget_5.currentItem().text()
+            if self.comboIndex == 6:
+                choosen = "Glomerulus"
+                print('masuk1')
         except:
             choosen = ''
         if choosen == "Gray Scale":
@@ -209,15 +251,15 @@ class Application(QtWidgets.QMainWindow):
                 self.imgFormat = "g"
         elif choosen == "Average Blur":
             self._print("Proses...")
-            self.convImg = blur(self.img)
+            self.convImg = blur(self.img, self.BlurXY)
             self.imgFormat = "rgb"
         elif choosen == "Gaussian Blur":
             self._print("Proses...")
-            self.convImg = gauss(self.img)
+            self.convImg = gauss(self.img, self.BlurXY)
             self.imgFormat = "rgb"
         elif choosen == "Median Blur":
             self._print("Proses...")
-            self.convImg = median(self.img)
+            self.convImg = median(self.img, self.BlurXY)
             self.imgFormat = "rgb"
         elif choosen == "CDF":
             self._print("Proses...")
@@ -236,6 +278,15 @@ class Application(QtWidgets.QMainWindow):
             self._print("Proses...")
             self.convImg = histo.clahe(self.img)
             self.imgFormat = "g"
+            # Plot Histogram
+            maxHist = 0
+            self.linePlot.clear()
+            for i, rgbHist in enumerate(histo.hist(self.img, gs = False)):
+                for j, hist in enumerate(rgbHist):
+                    if hist > maxHist : maxHist = hist
+                    self.linePlot.plotRGB(j, hist, color = i)
+            self.linePlot.setYMax(maxHist+5)
+            histoBool = True
         elif choosen == "Bilateral":
             self._print("Proses...")
             self.convImg = filters.bilateral(self.img)
@@ -268,6 +319,11 @@ class Application(QtWidgets.QMainWindow):
             self._print("Proses...")
             self.convImg = otsu(self.img, threshold = self.threshold)
             self.imgFormat = "g"
+        elif choosen == "In Range": 
+            self._print("Proses...")
+            self.convImg = inRange(self.img, self.LowHSV, self.UpHSV)
+            self.imgFormat = "g"
+            inRangebool = True
         elif choosen == "Connected":
             self._print("Proses...")
             n, self.convImg = connected(self.img)
@@ -283,26 +339,27 @@ class Application(QtWidgets.QMainWindow):
             self.imgFormat = "rgb"
         elif choosen == "Erode":
             self._print("Proses...")
-            self.convImg = erode(self.img, kernel = (5,5), itterations = 1)
+            self.convImg = erode(self.img, kernel = self.ContXY, itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Dilate":
             self._print("Proses...")
-            self.convImg = dilate(self.img, kernel = (5,5), itterations = 1)
+            self.convImg = dilate(self.img, kernel = self.ContXY, itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Opening":
             self._print("Proses...")
-            self.convImg = opening(self.img, kernel = (5,5), itterations = 1)
+            self.convImg = opening(self.img, kernel = self.ContXY, itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Closing":
             self._print("Proses...")
-            self.convImg = closing(self.img, kernel = (5,5), itterations = 1)
+            self.convImg = closing(self.img, kernel = self.ContXY, itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Gradient":
             self._print("Proses...")
-            self.convImg = gradient(self.img, kernel = (5,5), itterations = 1)
+            self.convImg = gradient(self.img, kernel = self.ContXY, itterations = 1)
             self.imgFormat = "rgb"
         elif choosen == "Glomerulus":
             self._print("Proses...")
+            print("masuk")
             self.convImg = glomerulus(self.img)
             self.imgFormat = "rgb"
         else:
@@ -310,6 +367,7 @@ class Application(QtWidgets.QMainWindow):
             return -2
 
         self.dockWidget.setVisible(True) if histoBool else self.dockWidget.setVisible(False)
+        self.stackedWidget_2.setCurrentIndex(1) if inRangebool else self.stackedWidget_2.setCurrentIndex(0)
 
         self._showPhoto(self.convImg, result = True)
         self._print("Selesai!")
