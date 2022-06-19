@@ -64,3 +64,5 @@ def gradient(img, kernel = (5,5), itterations = 3):
     for x in range(0,itterations):
         img = cv2.morphologyEx(img, cv2.MORPH_GRADIENT, kernel)
     return img
+
+def drawContour(img, contours):
