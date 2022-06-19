@@ -6,9 +6,9 @@ def connected(img):
 
 def contours(img, drawImg = [], draw = False, color = (255,255,0), thick = 5):
     contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    print("Contour Area(s): ",conArea(contours))
-    print("Contour Perimeter(s): ",perimeter(contours, closed = True))
-    print("Contour Center(s): ", center(contours))
+    #print("Contour Area(s): ",conArea(contours))
+    #print("Contour Perimeter(s): ",perimeter(contours, closed = True))
+    #print("Contour Center(s): ", center(contours))
     if draw:
         newImg = drawImg.copy()
         newImg = cv2.drawContours(newImg, contours, -1, color, thickness= thick)
