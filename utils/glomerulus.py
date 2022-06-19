@@ -19,22 +19,29 @@ def glomerulus(img):
     imgToMono = monoChrome(imgToMono)
     imgCont = contours(imgToMono)
     areas = conArea(imgCont)
+    #imgTEMP = img.copy()
+    #imgTEMP = cv2.drawContours(imgTEMP, imgCont, -1, color = (255,255,0), thickness = 3) 
+    #cv2.imwrite("img.jpg",imgTEMP)
 
     deviasis = {}
     devtotal = 0
     count = 0
+    firstMean = cv2.mean(maskGlom1)
+    #print("First Mean: ",firstMean)
     for i, area in enumerate(areas):
         if area > 30000 and area < 300000:
             mask = maskGlom1.copy()
-            firstMean = cv2.mean(maskGlom1)
             cv2.drawContours(mask, imgCont, i, 0, -1)
             mean = cv2.mean(mask)
             deviasi = firstMean[0] - mean[0]
             deviasis[i] = abs(deviasi)
             devtotal += abs(deviasi)
             count+=1
+            #print("Mean%s: "%i, mean,"Deviasi: ", deviasi)
+            #cv2.imwrite("Test%s.jpg"%i,mask)
     rata = devtotal/count
     for x in deviasis:
         if deviasis[x] >= rata:
             img = cv2.drawContours(img, imgCont, x, color = (255,255,0), thickness = 3)
+    cv2.imwrite("img.jpg",img)
     return img
