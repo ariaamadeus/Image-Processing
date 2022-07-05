@@ -12,7 +12,7 @@ from utils import filters
 from utils.blur import blur, gauss, median
 from utils.contours import connected, contours, \
     conArea, perimeter, center, erode, dilate, opening, closing, gradient 
-from utils.glomerulus import glomerulus
+from utils.doraemon import doraemon
 
 from graph.graph import linePlot
 
@@ -236,7 +236,7 @@ class Application(QtWidgets.QMainWindow):
             if self.comboIndex == 5:
                 choosen = self.listWidget_5.currentItem().text()
             if self.comboIndex == 6:
-                choosen = "Glomerulus"
+                choosen = "Doraemon"
         except:
             choosen = ''
         if choosen == "Gray Scale":
@@ -355,9 +355,9 @@ class Application(QtWidgets.QMainWindow):
             self._print("Proses...")
             self.convImg = gradient(self.img, kernel = self.ContXY, itterations = 1)
             self.imgFormat = "rgb"
-        elif choosen == "Glomerulus":
+        elif choosen == "Doraemon":
             self._print("Proses...")
-            self.convImg = glomerulus(self.img)
+            self.convImg = doraemon(self.img)
             self.imgFormat = "rgb"
         else:
             self._print("Mode belum dipilih!")
