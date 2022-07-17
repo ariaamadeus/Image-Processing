@@ -35,25 +35,25 @@ def initial():
 def _doraemon(img):
     image = img.copy()
     image = image[:,250:400]
-    cv2.imwrite("crop.jpg", image)
+    #cv2.imwrite("crop.jpg", image)
 
     toMono = gray(image)
-    cv2.imwrite("gray.jpg", toMono)
+    #cv2.imwrite("gray.jpg", toMono)
 
     for x in range(0,3):
         toMono = median(toMono, (5,5))
-    cv2.imwrite("median1.jpg", toMono)
+    #cv2.imwrite("median1.jpg", toMono)
     
     toMono = clahe(toMono)
-    cv2.imwrite("clahe.jpg", toMono)
+    #cv2.imwrite("clahe.jpg", toMono)
     
     toMono = mono(toMono)
-    cv2.imwrite("mono127.jpg", toMono)
+    #cv2.imwrite("mono127.jpg", toMono)
     #toMono = otsu(toMono)
 
     for x in range(0,3):
         toMono = median(toMono, (5,5))
-    cv2.imwrite("median2.jpg", toMono)
+    #cv2.imwrite("median2.jpg", toMono)
     return toMono
 
 def _doramean(img):
@@ -74,7 +74,7 @@ def _doramean(img):
             mean.append(cv2.mean(tiles))
             cv2.rectangle(image, (x, y), (x1, y1), (0, 255, 0))
             # cv2.imwrite("save/" + str(x) + '_' + str(y)+".png",tiles)
-    cv2.imwrite("separate.jpg", image)
+    #cv2.imwrite("separate.jpg", image)
     return mean
 
 initial()
