@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from .gray_scale import grayScale as gray
+from .gray_scale import grayScale as gray #from gray_scale
 
 def monoChrome(img, fromCV2 = True, threshold = 127, invert = False):
     if fromCV2:

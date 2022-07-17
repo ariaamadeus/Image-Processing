@@ -13,7 +13,6 @@ def contours(img, drawImg = [], draw = False, color = (255,255,0), thick = 5):
         newImg = drawImg.copy()
         newImg = cv2.drawContours(newImg, contours, -1, color, thickness= thick)
         return newImg
-    
     return contours
 
 def conArea(contours):

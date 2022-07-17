@@ -6,13 +6,15 @@ from PyQt5 import QtGui, QtWidgets, uic, QtCore
 
 from utils import img_converter as conv
 from utils.gray_scale import grayScale as gray
+from utils.iscircle import iscircle
 from utils.threshold import monoChrome, truncate, toZero, toZeroInv, otsu, inRange
 from utils import histogram as histo
 from utils import filters
 from utils.blur import blur, gauss, median
 from utils.contours import connected, contours, \
     conArea, perimeter, center, erode, dilate, opening, closing, gradient 
-from utils.doraemon import doraemon
+from utils.iscircle import iscircle
+from utils.kmeans import kmean
 
 from graph.graph import linePlot
 
@@ -165,7 +167,7 @@ class Application(QtWidgets.QMainWindow):
     def _changeComboBox(self, val):
         self.comboIndex = val
         self.stackedWidget.setCurrentIndex(val)
-        if val == 0 or val == 6:
+        if val in (0,6,7):
             self._convert()
 
     def _openClicked(self):
@@ -225,18 +227,20 @@ class Application(QtWidgets.QMainWindow):
         try:
             if self.comboIndex == 0:
                 choosen = "Gray Scale"
-            if self.comboIndex == 1:
+            elif self.comboIndex == 1:
                 choosen = self.listWidget.currentItem().text()
-            if self.comboIndex == 2:
+            elif self.comboIndex == 2:
                 choosen = self.listWidget_2.currentItem().text()
-            if self.comboIndex == 3:
+            elif self.comboIndex == 3:
                 choosen = self.listWidget_3.currentItem().text()
-            if self.comboIndex == 4:
+            elif self.comboIndex == 4:
                 choosen = self.listWidget_4.currentItem().text()
-            if self.comboIndex == 5:
+            elif self.comboIndex == 5:
                 choosen = self.listWidget_5.currentItem().text()
-            if self.comboIndex == 6:
-                choosen = "Doraemon"
+            elif self.comboIndex == 6:
+                choosen = "PCB Hole"
+            elif self.comboIndex == 7:
+                choosen = "Kancing"
         except:
             choosen = ''
         if choosen == "Gray Scale":
@@ -355,9 +359,13 @@ class Application(QtWidgets.QMainWindow):
             self._print("Proses...")
             self.convImg = gradient(self.img, kernel = self.ContXY, itterations = 1)
             self.imgFormat = "rgb"
-        elif choosen == "Doraemon":
+        elif choosen == "PCB Hole":
             self._print("Proses...")
-            self.convImg = doraemon(self.img)
+            self.convImg = iscircle(self.img)
+            self.imgFormat = "rgb"
+        elif choosen == "Kancing":
+            self._print("Proses...")
+            self.convImg = kmean(self.img, K = 11)
             self.imgFormat = "rgb"
         else:
             self._print("Mode belum dipilih!")
