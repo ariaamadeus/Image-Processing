@@ -165,7 +165,7 @@ background-color: rgb(255, 255, 255);</string>
           </sizepolicy>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>5</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QHBoxLayout" name="horizontalLayout"/>
@@ -630,6 +630,17 @@ selection-background-color: rgb(193, 255, 249);</string>
              <item>
               <property name="text">
                <string>Connected</string>
+              </property>
+              <property name="font">
+               <font>
+                <family>Umpush</family>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Contours With Provided Mask</string>
               </property>
               <property name="font">
                <font>
