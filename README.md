@@ -5,8 +5,8 @@ requirements:
 `pip install -r requirements.txt`
 
 ```
-PyQt5==5.15
-PyQtChart==5.15 //(versinya sama)
+PyQt5==5.15.0
+PyQtChart==5.15.0 //(versinya sama)
 
 opencv-python
 opencv-python-headless
